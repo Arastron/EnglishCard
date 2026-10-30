@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS words (
+    word_id SERIAL PRIMARY KEY,
+    russian_word VARCHAR(100) NOT NULL,
+    english_word VARCHAR(100) NOT NULL,
+    owner_user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (owner_user_id, russian_word, english_word)
+);
+
+CREATE TABLE IF NOT EXISTS user_words (
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    word_id INTEGER NOT NULL REFERENCES words(word_id) ON DELETE CASCADE,
+    added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, word_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_answers (
+    answer_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    word_id INTEGER NOT NULL REFERENCES words(word_id) ON DELETE CASCADE,
+    is_correct BOOLEAN NOT NULL,
+    answered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
